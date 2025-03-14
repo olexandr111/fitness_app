@@ -1,11 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
-import '../colors.dart'; // Переконайтеся, що файл із кольорами правильний
+import 'package:provider/provider.dart';
+import '../colors.dart';
+import '../theme_provider.dart';
 import 'goal_screen.dart';
 import 'measurements_screen.dart';
 import 'stats_screen.dart';
 import 'training_plan_screen.dart';
 import 'workout_screen.dart';
+
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
@@ -14,9 +17,9 @@ class HomeScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
-        extendBodyBehindAppBar: true, // Дозволяє фону заходити під AppBar
+        extendBodyBehindAppBar: true,
         appBar: PreferredSize(
-          preferredSize: const Size.fromHeight(70), // Збільшуємо висоту
+          preferredSize: const Size.fromHeight(70),
           child: AppBar(
             toolbarHeight: 65,
             flexibleSpace: Container(
@@ -48,16 +51,16 @@ class HomeScreen extends StatelessWidget {
                 ],
               ),
             ).animate().fadeIn(duration: 800.ms).slideX(
-              begin: -0.2,
-              end: 0,
-              duration: 800.ms,
-              curve: Curves.easeOutCubic,
-            ),
+                  begin: -0.2,
+                  end: 0,
+                  duration: 800.ms,
+                  curve: Curves.easeOutCubic,
+                ),
             centerTitle: true,
-            elevation: 8, // Тінь для глибини
+            elevation: 8,
             shape: const RoundedRectangleBorder(
               borderRadius: BorderRadius.vertical(
-                bottom: Radius.circular(20), // Закруглені нижні краї
+                bottom: Radius.circular(20),
               ),
             ),
             actions: [
@@ -70,15 +73,21 @@ class HomeScreen extends StatelessWidget {
                 },
               ),
               IconButton(
-                icon: const Icon(Icons.person, color: Colors.white, size: 28),
-                onPressed: () {},
+                icon: Icon(
+                  Provider.of<ThemeProvider>(context).isDarkMode
+                      ? Icons.light_mode
+                      : Icons.dark_mode,
+                  size: 28,
+                ),
+                onPressed: () {
+                  Provider.of<ThemeProvider>(context, listen: false).toggleTheme();
+                },
               ),
               const SizedBox(width: 8),
             ],
             leading: IconButton(
               icon: const Icon(Icons.menu, color: Colors.white, size: 28),
               onPressed: () {
-                // Тут можна додати відкриття бокового меню
                 ScaffoldMessenger.of(context).showSnackBar(
                   const SnackBar(content: Text('Menu coming soon!')),
                 );
@@ -87,62 +96,56 @@ class HomeScreen extends StatelessWidget {
           ),
         ),
         body: Container(
-          decoration: BoxDecoration(
-            gradient: LinearGradient(
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-              colors: [
-                backgroundColor.withOpacity(0.9),
-                backgroundColor.withOpacity(0.7),
-              ],
-            ),
-          ),
+          color: AppColors.backgroundColor(context),
           child: Center(
             child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 24.0),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  _buildMenuCard(
-                    context,
-                    title: 'Workouts',
-                    icon: Icons.fitness_center,
-                    destination: const WorkoutScreen(),
-                    delay: 100.ms,
-                  ),
-                  const SizedBox(height: 16),
-                  _buildMenuCard(
-                    context,
-                    title: 'Training Plans',
-                    icon: Icons.calendar_today,
-                    destination: const TrainingPlansScreen(),
-                    delay: 200.ms,
-                  ),
-                  const SizedBox(height: 16),
-                  _buildMenuCard(
-                    context,
-                    title: 'Goals',
-                    icon: Icons.flag,
-                    destination: const GoalsScreen(),
-                    delay: 300.ms,
-                  ),
-                  const SizedBox(height: 16),
-                  _buildMenuCard(
-                    context,
-                    title: 'Statistics',
-                    icon: Icons.bar_chart,
-                    destination: const StatsScreen(),
-                    delay: 400.ms,
-                  ),
-                  const SizedBox(height: 16),
-                  _buildMenuCard(
-                    context,
-                    title: 'Body Measurements',
-                    icon: Icons.straighten,
-                    destination: const MeasurementsScreen(),
-                    delay: 500.ms,
-                  ),
-                ],
+              padding:
+                  const EdgeInsets.symmetric(horizontal: 16.0, vertical: 24.0),
+              child: SingleChildScrollView(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    _buildMenuCard(
+                      context,
+                      title: 'Workouts',
+                      icon: Icons.fitness_center,
+                      destination: const WorkoutScreen(),
+                      delay: 100.ms,
+                    ),
+                    const SizedBox(height: 16),
+                    _buildMenuCard(
+                      context,
+                      title: 'Training Plans',
+                      icon: Icons.calendar_today,
+                      destination: const TrainingPlansScreen(),
+                      delay: 200.ms,
+                    ),
+                    const SizedBox(height: 16),
+                    _buildMenuCard(
+                      context,
+                      title: 'Goals',
+                      icon: Icons.flag,
+                      destination: const GoalsScreen(),
+                      delay: 300.ms,
+                    ),
+                    const SizedBox(height: 16),
+                    _buildMenuCard(
+                      context,
+                      title: 'Statistics',
+                      icon: Icons.bar_chart,
+                      destination: const StatsScreen(),
+                      delay: 400.ms,
+                    ),
+                    const SizedBox(height: 16),
+                    _buildMenuCard(
+                      context,
+                      title: 'Body Measurements',
+                      icon: Icons.straighten,
+                      destination: const MeasurementsScreen(),
+                      delay: 500.ms,
+                    ),
+                  ],
+                ),
               ),
             ),
           ),
@@ -152,57 +155,53 @@ class HomeScreen extends StatelessWidget {
   }
 
   Widget _buildMenuCard(
-      BuildContext context, {
-        required String title,
-        required IconData icon,
-        required Widget destination,
-        required Duration delay,
-      }) {
+    BuildContext context, {
+    required String title,
+    required IconData icon,
+    required Widget destination,
+    required Duration delay,
+  }) {
     return Card(
-      elevation: 6,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-      color: cardColor,
+      elevation: 4,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      color: AppColors.cardColor(context),
       child: InkWell(
         onTap: () => Navigator.push(
           context,
           MaterialPageRoute(builder: (context) => destination),
         ),
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(12),
         child: Padding(
-          padding: const EdgeInsets.symmetric(vertical: 20.0, horizontal: 16.0),
+          padding: const EdgeInsets.symmetric(vertical: 16.0, horizontal: 12.0),
           child: Row(
             children: [
-              Icon(
-                icon,
-                color: accentColor,
-                size: 32,
-              ),
-              const SizedBox(width: 16),
+              Icon(icon, color: AppColors.accentColor(context), size: 28),
+              const SizedBox(width: 12),
               Expanded(
                 child: Text(
                   title,
-                  style: const TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.w600,
-                    color: Colors.white,
+                  style: TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.w500,
+                    color: AppColors.textColor(context),
                   ),
                 ),
               ),
               Icon(
                 Icons.arrow_forward_ios,
-                color: accentColor.withOpacity(0.7),
-                size: 20,
+                color: AppColors.accentColor(context),
+                size: 18,
               ),
             ],
           ),
         ),
       ),
     ).animate().fadeIn(duration: 600.ms, delay: delay).slideY(
-      begin: 0.3,
-      end: 0,
-      duration: 600.ms,
-      delay: delay,
-      curve: Curves.easeOutCubic,
-    );
+          begin: 0.3,
+          end: 0,
+          duration: 600.ms,
+          delay: delay,
+          curve: Curves.easeOutCubic,
+        );
   }
 }

@@ -1,6 +1,5 @@
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
-
 import '../cards/stat_card.dart';
 import '../colors.dart';
 import '../database/workout_database.dart';
@@ -16,8 +15,30 @@ class StatsScreen extends StatelessWidget {
     if (workouts.isEmpty) {
       return SafeArea(
         child: Scaffold(
-          appBar: AppBar(title: const Text('Statistics')),
-          body: const Center(child: Text('No data available')),
+          appBar: AppBar(
+            title: const Text('Statistics'),
+            flexibleSpace: Container(
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                  colors: [
+                    AppColors.primaryColor(context), // Динамічний колір AppBar
+                    AppColors.primaryColor(context).withOpacity(0.8),
+                  ],
+                ),
+              ),
+            ),
+          ),
+          body: Container(
+            color: AppColors.backgroundColor(context), // Динамічний колір фону
+            child: Center(
+              child: Text(
+                'No data available',
+                style: TextStyle(color: AppColors.textColor(context)), // Динамічний колір тексту
+              ),
+            ),
+          ),
         ),
       );
     }
@@ -33,15 +54,31 @@ class StatsScreen extends StatelessWidget {
       }
       for (var exercise in exercises) {
         if (exercise['isCompleted'] as bool? ?? false) {
-          totalCalories += ((exercise['duration'] as num) / 60) * (exercise['caloriesPerMinute'] as num).toDouble();
+          totalCalories +=
+              ((exercise['duration'] as num) / 60) * (exercise['caloriesPerMinute'] as num).toDouble();
           totalDuration += (exercise['duration'] as num).toInt();
         }
       }
     }
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Statistics')),
-      body: Padding(
+      appBar: AppBar(
+        title: const Text('Statistics'),
+        flexibleSpace: Container(
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+              colors: [
+                AppColors.primaryColor(context), // Динамічний колір AppBar
+                AppColors.primaryColor(context).withOpacity(0.8),
+              ],
+            ),
+          ),
+        ),
+      ),
+      body: Container(
+        color: AppColors.backgroundColor(context), // Динамічний колір фону
         padding: const EdgeInsets.all(16.0),
         child: Column(
           children: [
@@ -66,14 +103,14 @@ class StatsScreen extends StatelessWidget {
               icon: Icons.local_fire_department,
             ),
             const SizedBox(height: 20),
-            Expanded(child: _buildCaloriesChart(workouts)),
+            Expanded(child: _buildCaloriesChart(context, workouts)), // Передаємо context
           ],
         ),
       ),
     );
   }
 
-  Widget _buildCaloriesChart(List<Map<String, dynamic>> workouts) {
+  Widget _buildCaloriesChart(BuildContext context, List<Map<String, dynamic>> workouts) {
     final Map<String, double> caloriesByDate = {};
     for (var workout in workouts) {
       final date = workout['date'] as String;
@@ -81,7 +118,8 @@ class StatsScreen extends StatelessWidget {
       final exercises = workout['exercises'] as List<Map<String, dynamic>>;
       for (var exercise in exercises) {
         if (exercise['isCompleted'] as bool? ?? false) {
-          calories += ((exercise['duration'] as num) / 60) * (exercise['caloriesPerMinute'] as num).toDouble();
+          calories +=
+              ((exercise['duration'] as num) / 60) * (exercise['caloriesPerMinute'] as num).toDouble();
         }
       }
       caloriesByDate[date] = (caloriesByDate[date] ?? 0) + calories;
@@ -95,21 +133,34 @@ class StatsScreen extends StatelessWidget {
 
     return LineChart(
       LineChartData(
-        gridData: FlGridData(show: true),
+        gridData: FlGridData(
+          show: true,
+          getDrawingHorizontalLine: (value) => FlLine(
+            color: AppColors.secondaryTextColor(context).withOpacity(0.3), // Динамічний колір сітки
+            strokeWidth: 1,
+          ),
+          getDrawingVerticalLine: (value) => FlLine(
+            color: AppColors.secondaryTextColor(context).withOpacity(0.3),
+            strokeWidth: 1,
+          ),
+        ),
         titlesData: FlTitlesData(
           bottomTitles: AxisTitles(
             sideTitles: SideTitles(
               showTitles: true,
-              reservedSize: 40, // Збільшуємо простір для нижніх міток
-              interval: 1, // Інтервал між мітками
+              reservedSize: 40,
+              interval: 1,
               getTitlesWidget: (value, meta) {
                 final index = value.toInt();
                 if (index >= 0 && index < dates.length) {
                   return Padding(
-                    padding: const EdgeInsets.only(top: 8.0), // Додаємо відступ зверху для міток
+                    padding: const EdgeInsets.only(top: 8.0),
                     child: Text(
-                      dates[index].split('.')[0], // Показуємо лише день
-                      style: const TextStyle(fontSize: 12),
+                      dates[index].split('.')[0],
+                      style: TextStyle(
+                        fontSize: 12,
+                        color: AppColors.textColor(context), // Динамічний колір тексту
+                      ),
                     ),
                   );
                 }
@@ -120,11 +171,14 @@ class StatsScreen extends StatelessWidget {
           leftTitles: AxisTitles(
             sideTitles: SideTitles(
               showTitles: true,
-              reservedSize: 40, // Простір для лівих міток
+              reservedSize: 40,
               getTitlesWidget: (value, meta) {
                 return Text(
                   value.toInt().toString(),
-                  style: const TextStyle(fontSize: 12),
+                  style: TextStyle(
+                    fontSize: 12,
+                    color: AppColors.textColor(context), // Динамічний колір тексту
+                  ),
                 );
               },
             ),
@@ -132,14 +186,22 @@ class StatsScreen extends StatelessWidget {
           topTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
           rightTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
         ),
-        borderData: FlBorderData(show: true),
+        borderData: FlBorderData(
+          show: true,
+          border: Border.all(
+            color: AppColors.secondaryTextColor(context).withOpacity(0.5), // Динамічний колір межі
+          ),
+        ),
         lineBarsData: [
           LineChartBarData(
             spots: spots,
             isCurved: true,
-            color: accentColor,
+            color: AppColors.accentColor(context), // Динамічний колір лінії
             barWidth: 4,
-            belowBarData: BarAreaData(show: true, color: accentColor.withOpacity(0.3)),
+            belowBarData: BarAreaData(
+              show: true,
+              color: AppColors.accentColor(context).withOpacity(0.3), // Динамічний колір області
+            ),
           ),
         ],
         extraLinesData: ExtraLinesData(),

@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
-
 import '../colors.dart';
 
 class StatCard extends StatelessWidget {
@@ -18,20 +17,37 @@ class StatCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Card(
-      color: cardColor,
+      color: AppColors.cardColor(context), // Динамічний колір картки
       elevation: 5,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       child: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Row(
           children: [
-            Icon(icon, color: accentColor, size: 40),
+            Icon(
+              icon,
+              color: AppColors.accentColor(context), // Динамічний колір іконки
+              size: 40,
+            ),
             const SizedBox(width: 16),
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(title, style: const TextStyle(fontSize: 18)),
-                Text(value, style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
+                Text(
+                  title,
+                  style: TextStyle(
+                    fontSize: 18,
+                    color: AppColors.textColor(context), // Динамічний колір тексту
+                  ),
+                ),
+                Text(
+                  value,
+                  style: TextStyle(
+                    fontSize: 24,
+                    fontWeight: FontWeight.bold,
+                    color: AppColors.textColor(context), // Динамічний колір тексту
+                  ),
+                ),
               ],
             ),
           ],

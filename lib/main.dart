@@ -9,5 +9,6 @@ void main() async {
   await Hive.openBox('training_plans');
   await Hive.openBox('goals');
   await Hive.openBox('measurements');
+  await Hive.openBox('settings');
   runApp(const FitnessApp());
 }

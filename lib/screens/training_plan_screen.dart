@@ -28,9 +28,25 @@ class _TrainingPlansScreenState extends State<TrainingPlansScreen> {
       child: Scaffold(
         appBar: AppBar(
           title: const Text('Training Plans'),
-
+          flexibleSpace: Container(
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+                colors: [
+                  AppColors.primaryColor(context),
+                  AppColors.primaryColor(context).withOpacity(0.8),
+                ],
+              ),
+            ),
+          ),
+          elevation: 4,
+          shape: const RoundedRectangleBorder(
+            borderRadius: BorderRadius.vertical(bottom: Radius.circular(20)),
+          ),
         ),
-        body: Padding(
+        body: Container(
+          color: AppColors.backgroundColor(context), // Динамічний колір фону
           padding: const EdgeInsets.all(16.0),
           child: Column(
             children: [
@@ -46,7 +62,7 @@ class _TrainingPlansScreenState extends State<TrainingPlansScreen> {
 
   Widget _buildPlanForm() {
     return Card(
-      color: cardColor,
+      color: AppColors.cardColor(context), // Динамічний колір картки
       elevation: 5,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       child: Padding(
@@ -55,17 +71,29 @@ class _TrainingPlansScreenState extends State<TrainingPlansScreen> {
           children: [
             TextField(
               controller: _nameController,
-              decoration: const InputDecoration(labelText: 'Plan Name'),
+              decoration: InputDecoration(
+                labelText: 'Plan Name',
+                labelStyle: TextStyle(color: AppColors.secondaryTextColor(context)),
+              ),
+              style: TextStyle(color: AppColors.textColor(context)), // Динамічний колір тексту
             ),
             const SizedBox(height: 10),
             TextField(
               controller: _daysController,
-              decoration: const InputDecoration(labelText: 'Number of Days'),
+              decoration: InputDecoration(
+                labelText: 'Number of Days',
+                labelStyle: TextStyle(color: AppColors.secondaryTextColor(context)),
+              ),
               keyboardType: TextInputType.number,
+              style: TextStyle(color: AppColors.textColor(context)),
             ),
             const SizedBox(height: 20),
             ElevatedButton(
               onPressed: _addPlan,
+              style: ElevatedButton.styleFrom(
+                backgroundColor: AppColors.primaryColor(context), // Динамічний колір кнопки
+                foregroundColor: Colors.white,
+              ),
               child: const Text('Add Plan'),
             ),
           ],
@@ -80,8 +108,14 @@ class _TrainingPlansScreenState extends State<TrainingPlansScreen> {
       builder: (context, Box box, _) {
         final plans = _db.getPlans();
         if (plans.isEmpty) {
-          return const Center(
-            child: Text('No plans yet!', style: TextStyle(fontSize: 18)),
+          return Center(
+            child: Text(
+              'No plans yet!',
+              style: TextStyle(
+                fontSize: 18,
+                color: AppColors.textColor(context), // Динамічний колір тексту
+              ),
+            ),
           );
         }
         return ListView.builder(
@@ -89,12 +123,23 @@ class _TrainingPlansScreenState extends State<TrainingPlansScreen> {
           itemBuilder: (context, index) {
             final plan = plans[index];
             return ListTile(
-              title: Text(plan['name']),
-              subtitle: Text('Duration: ${plan['days']} days'),
+              title: Text(
+                plan['name'],
+                style: TextStyle(color: AppColors.textColor(context)),
+              ),
+              subtitle: Text(
+                'Duration: ${plan['days']} days',
+                style: TextStyle(color: AppColors.secondaryTextColor(context)),
+              ),
               trailing: IconButton(
-                icon: const Icon(Icons.delete, color: Colors.red),
+                icon: Icon(
+                  Icons.delete,
+                  color: Colors.red[400], // Червоний для видалення
+                ),
                 onPressed: () => _db.deletePlan(index),
               ),
+              tileColor: AppColors.cardColor(context), // Динамічний колір фону плитки
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
             );
           },
         );
@@ -105,7 +150,13 @@ class _TrainingPlansScreenState extends State<TrainingPlansScreen> {
   void _addPlan() {
     if (_nameController.text.isEmpty || _daysController.text.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Please fill all fields')),
+        SnackBar(
+          content: Text(
+            'Please fill all fields',
+            style: TextStyle(color: AppColors.textColor(context)),
+          ),
+          backgroundColor: AppColors.cardColor(context),
+        ),
       );
       return;
     }
@@ -120,7 +171,13 @@ class _TrainingPlansScreenState extends State<TrainingPlansScreen> {
     _nameController.clear();
     _daysController.clear();
     ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Plan added')),
+      SnackBar(
+        content: Text(
+          'Plan added',
+          style: TextStyle(color: AppColors.textColor(context)),
+        ),
+        backgroundColor: AppColors.cardColor(context),
+      ),
     );
   }
 }

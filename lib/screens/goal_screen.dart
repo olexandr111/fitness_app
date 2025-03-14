@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
-
 import '../colors.dart';
 import '../database/goal_database.dart';
 import '../database/workout_database.dart';
@@ -17,7 +16,6 @@ class _GoalsScreenState extends State<GoalsScreen> {
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _targetController = TextEditingController();
   String? _selectedType;
-
   final List<String> _goalTypes = ['Calories', 'Workouts'];
 
   @override
@@ -29,20 +27,35 @@ class _GoalsScreenState extends State<GoalsScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return SafeArea(
-      child: Scaffold(
-        appBar: AppBar(
-          title: const Text('Goals'),
-        ),
-        body: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Column(
-            children: [
-              _buildGoalForm(),
-              const SizedBox(height: 20),
-              Expanded(child: _buildGoalList()),
-            ],
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Goals'),
+        flexibleSpace: Container(
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+              colors: [
+                AppColors.primaryColor(context),
+                AppColors.primaryColor(context).withOpacity(0.8),
+              ],
+            ),
           ),
+        ),
+        elevation: 4,
+        shape: const RoundedRectangleBorder(
+          borderRadius: BorderRadius.vertical(bottom: Radius.circular(20)),
+        ),
+      ),
+      body: Container(
+        color: AppColors.backgroundColor(context),
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          children: [
+            _buildGoalForm(),
+            const SizedBox(height: 20),
+            Expanded(child: _buildGoalList()),
+          ],
         ),
       ),
     );
@@ -50,21 +63,28 @@ class _GoalsScreenState extends State<GoalsScreen> {
 
   Widget _buildGoalForm() {
     return Card(
-      color: cardColor,
-      elevation: 5,
+      elevation: 4,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      color: AppColors.cardColor(context),
       child: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
           children: [
             TextField(
               controller: _nameController,
-              decoration: const InputDecoration(labelText: 'Goal Name'),
+              decoration: InputDecoration(
+                labelText: 'Goal Name',
+                labelStyle: TextStyle(color: AppColors.secondaryTextColor(context)),
+              ),
+              style: TextStyle(color: AppColors.textColor(context)),
             ),
             const SizedBox(height: 10),
             DropdownButtonFormField<String>(
               value: _selectedType,
-              decoration: const InputDecoration(labelText: 'Goal Type'),
+              decoration: InputDecoration(
+                labelText: 'Goal Type',
+                labelStyle: TextStyle(color: AppColors.secondaryTextColor(context)),
+              ),
               items: _goalTypes.map((type) {
                 return DropdownMenuItem(value: type, child: Text(type));
               }).toList(),
@@ -73,12 +93,17 @@ class _GoalsScreenState extends State<GoalsScreen> {
                   _selectedType = value;
                 });
               },
+              style: TextStyle(color: AppColors.textColor(context)),
             ),
             const SizedBox(height: 10),
             TextField(
               controller: _targetController,
-              decoration: const InputDecoration(labelText: 'Target Value'),
+              decoration: InputDecoration(
+                labelText: 'Target Value',
+                labelStyle: TextStyle(color: AppColors.secondaryTextColor(context)),
+              ),
               keyboardType: TextInputType.number,
+              style: TextStyle(color: AppColors.textColor(context)),
             ),
             const SizedBox(height: 20),
             ElevatedButton(
@@ -97,8 +122,11 @@ class _GoalsScreenState extends State<GoalsScreen> {
       builder: (context, Box box, _) {
         final goals = _db.getGoals();
         if (goals.isEmpty) {
-          return const Center(
-            child: Text('No goals yet!', style: TextStyle(fontSize: 18)),
+          return Center(
+            child: Text(
+              'No goals yet!',
+              style: TextStyle(fontSize: 18, color: AppColors.textColor(context)),
+            ),
           );
         }
         return ListView.builder(
@@ -107,20 +135,34 @@ class _GoalsScreenState extends State<GoalsScreen> {
             final goal = goals[index];
             final progress = _calculateGoalProgress(goal);
             return Card(
-              color: cardColor,
-              elevation: 5,
+              elevation: 4,
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+              color: AppColors.cardColor(context),
               child: ListTile(
-                title: Text('${goal['name']} (${goal['type']})'),
+                title: Text(
+                  '${goal['name']} (${goal['type']})',
+                  style: TextStyle(color: AppColors.textColor(context)),
+                ),
                 subtitle: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text('Target: ${goal['target']}'),
-                    LinearProgressIndicator(value: progress),
-                    Text('Progress: ${(progress * 100).toStringAsFixed(1)}%'),
+                    Text(
+                      'Target: ${goal['target']}',
+                      style: TextStyle(color: AppColors.secondaryTextColor(context)),
+                    ),
+                    LinearProgressIndicator(
+                      value: progress,
+                      color: AppColors.accentColor(context),
+                      backgroundColor: AppColors.secondaryTextColor(context).withOpacity(0.3),
+                    ),
+                    Text(
+                      'Progress: ${(progress * 100).toStringAsFixed(1)}%',
+                      style: TextStyle(color: AppColors.secondaryTextColor(context)),
+                    ),
                   ],
                 ),
                 trailing: IconButton(
-                  icon: const Icon(Icons.delete, color: Colors.red),
+                  icon: Icon(Icons.delete, color: Colors.red[400]),
                   onPressed: () => _db.deleteGoal(index),
                 ),
               ),

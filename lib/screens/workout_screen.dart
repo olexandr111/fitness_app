@@ -16,8 +16,7 @@ class WorkoutScreen extends StatefulWidget {
 
 class _WorkoutScreenState extends State<WorkoutScreen> {
   final WorkoutDatabase _db = WorkoutDatabase();
-  List<Map<String, dynamic>> _exercises =
-      []; // Список вправ для нового тренування
+  List<Map<String, dynamic>> _exercises = [];
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _durationController = TextEditingController();
   final TextEditingController _caloriesController = TextEditingController();
@@ -45,7 +44,6 @@ class _WorkoutScreenState extends State<WorkoutScreen> {
       child: Scaffold(
         appBar: AppBar(
           title: const Text('Workouts'),
-
         ),
         body: Padding(
           padding: const EdgeInsets.all(16.0),
@@ -62,12 +60,12 @@ class _WorkoutScreenState extends State<WorkoutScreen> {
   }
 
   // Форма для введення даних
-  bool _isFormExpanded = false; // Стан форми (згорнута/розгорнута)
+  bool _isFormExpanded = false;
 
   Widget _buildForm() {
     return Column(
       children: [
-        SizedBox(height: 10),
+        const SizedBox(height: 10),
         Container(
           width: 220,
           height: 60,
@@ -77,16 +75,23 @@ class _WorkoutScreenState extends State<WorkoutScreen> {
                 _isFormExpanded = !_isFormExpanded; // Змінюємо стан форми
               });
             },
+            style: ElevatedButton.styleFrom(
+              backgroundColor: AppColors.primaryColor(context),
+              // Динамічний колір кнопки
+              foregroundColor: Colors.white,
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12)),
+            ),
             child: Text(
               _isFormExpanded ? 'Hide' : ' + Add Workouts',
-              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+              style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
             ),
           ),
         ),
         AnimatedCrossFade(
           firstChild: const SizedBox(), // Порожній віджет, коли форма прихована
           secondChild: Card(
-            color: cardColor,
+            color: AppColors.cardColor(context), // Динамічний колір картки
             elevation: 5,
             shape:
                 RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
@@ -96,36 +101,58 @@ class _WorkoutScreenState extends State<WorkoutScreen> {
                 children: [
                   TextField(
                     controller: _nameController,
-                    decoration:
-                        const InputDecoration(labelText: 'Exercise Name'),
+                    decoration: InputDecoration(
+                      labelText: 'Exercise Name',
+                      labelStyle: TextStyle(
+                          color: AppColors.secondaryTextColor(context)),
+                    ),
+                    style: TextStyle(color: AppColors.textColor(context)),
                   ),
                   const SizedBox(height: 10),
                   TextField(
                     controller: _durationController,
-                    decoration:
-                        const InputDecoration(labelText: 'Duration (seconds)'),
+                    decoration: InputDecoration(
+                      labelText: 'Duration (seconds)',
+                      labelStyle: TextStyle(
+                          color: AppColors.secondaryTextColor(context)),
+                    ),
                     keyboardType: TextInputType.number,
+                    style: TextStyle(color: AppColors.textColor(context)),
                   ),
                   const SizedBox(height: 10),
                   TextField(
                     controller: _caloriesController,
-                    decoration:
-                        const InputDecoration(labelText: 'Calories per Minute'),
+                    decoration: InputDecoration(
+                      labelText: 'Calories per Minute',
+                      labelStyle: TextStyle(
+                          color: AppColors.secondaryTextColor(context)),
+                    ),
                     keyboardType: TextInputType.number,
+                    style: TextStyle(color: AppColors.textColor(context)),
                   ),
                   const SizedBox(height: 10),
                   DropdownButtonFormField<String>(
                     value: _selectedCategory,
-                    decoration: const InputDecoration(labelText: 'Category'),
+                    decoration: InputDecoration(
+                      labelText: 'Category',
+                      labelStyle: TextStyle(
+                          color: AppColors.secondaryTextColor(context)),
+                    ),
                     items: _categories.map((category) {
                       return DropdownMenuItem(
-                          value: category, child: Text(category));
+                        value: category,
+                        child: Text(
+                          category,
+                          style: TextStyle(color: AppColors.textColor(context)),
+                        ),
+                      );
                     }).toList(),
                     onChanged: (value) {
                       setState(() {
                         _selectedCategory = value;
                       });
                     },
+                    style: TextStyle(color: AppColors.textColor(context)),
                   ),
                   const SizedBox(height: 10),
                   _buildDatePicker(),
@@ -134,15 +161,31 @@ class _WorkoutScreenState extends State<WorkoutScreen> {
                   const SizedBox(height: 10),
                   ElevatedButton(
                     onPressed: _addExerciseToWorkout,
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: AppColors.primaryColor(context),
+                      foregroundColor: Colors.white,
+                    ),
                     child: const Text('Add Exercise to Workout'),
                   ),
                   const SizedBox(height: 10),
                   if (_exercises.isNotEmpty)
-                    Text('Exercises in Workout: ${_exercises.length}',
-                        style: const TextStyle(fontSize: 16)),
+                    Text(
+                      'Exercises in Workout: ${_exercises.length}',
+                      style: TextStyle(
+                        fontSize: 16,
+                        color: AppColors.textColor(context),
+                      ),
+                    ),
                   const SizedBox(height: 10),
                   ElevatedButton(
                     onPressed: _exercises.isNotEmpty ? _addWorkout : null,
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: _exercises.isNotEmpty
+                          ? AppColors.primaryColor(context)
+                          : AppColors.secondaryTextColor(context)
+                              .withOpacity(0.5),
+                      foregroundColor: Colors.white,
+                    ),
                     child: const Text('Save Workout'),
                   ),
                 ],
@@ -159,6 +202,8 @@ class _WorkoutScreenState extends State<WorkoutScreen> {
   }
 
   // Вибір дати
+
+// Вибір дати
   Widget _buildDatePicker() {
     return TextField(
       controller: TextEditingController(
@@ -169,15 +214,21 @@ class _WorkoutScreenState extends State<WorkoutScreen> {
       readOnly: true,
       decoration: InputDecoration(
         labelText: 'Select Date',
+        labelStyle: TextStyle(color: AppColors.secondaryTextColor(context)),
         suffixIcon: IconButton(
-          icon: const Icon(Icons.calendar_today, color: Colors.white),
+          icon: Icon(
+            Icons.calendar_today,
+            color: AppColors.accentColor(context), // Динамічний колір іконки
+          ),
           onPressed: _pickDate,
         ),
       ),
+      style: TextStyle(
+          color: AppColors.textColor(context)), // Динамічний колір тексту
     );
   }
 
-  // Вибір часу
+// Вибір часу
   Widget _buildTimePicker() {
     return TextField(
       controller: TextEditingController(
@@ -186,23 +237,35 @@ class _WorkoutScreenState extends State<WorkoutScreen> {
       readOnly: true,
       decoration: InputDecoration(
         labelText: 'Select Time',
+        labelStyle: TextStyle(color: AppColors.secondaryTextColor(context)),
         suffixIcon: IconButton(
-          icon: const Icon(Icons.access_time, color: Colors.white),
+          icon: Icon(
+            Icons.access_time,
+            color: AppColors.accentColor(context), // Динамічний колір іконки
+          ),
           onPressed: _pickTime,
         ),
       ),
+      style: TextStyle(
+          color: AppColors.textColor(context)), // Динамічний колір тексту
     );
   }
 
-  // Список тренувань
+// Список тренувань
   Widget _buildWorkoutList() {
     return ValueListenableBuilder(
       valueListenable: Hive.box('workouts').listenable(),
       builder: (context, Box box, _) {
         final workouts = _db.getWorkouts();
         if (workouts.isEmpty) {
-          return const Center(
-            child: Text('No workouts yet!', style: TextStyle(fontSize: 18)),
+          return Center(
+            child: Text(
+              'No workouts yet!',
+              style: TextStyle(
+                fontSize: 18,
+                color: AppColors.textColor(context), // Динамічний колір тексту
+              ),
+            ),
           );
         }
         return ListView.builder(

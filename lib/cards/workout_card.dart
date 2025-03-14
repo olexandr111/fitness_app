@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:timer_count_down/timer_count_down.dart';
-
 import '../colors.dart';
 
 class WorkoutCard extends StatelessWidget {
@@ -27,17 +26,32 @@ class WorkoutCard extends StatelessWidget {
     print('Building WorkoutCard with exercises: $exercises'); // Перевіряємо дані
 
     return Card(
-      color: allCompleted ? Colors.green.withOpacity(0.2) : cardColor,
+      color: allCompleted
+          ? AppColors.accentColor(context).withOpacity(0.2)
+          : AppColors.cardColor(context), // Динамічний колір картки
       elevation: 5,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       child: ExpansionTile(
         title: Text(
           'Workout on ${workout['date']} at ${workout['time']}',
-          style: const TextStyle(fontWeight: FontWeight.bold),
+          style: TextStyle(
+            fontWeight: FontWeight.bold,
+            color: AppColors.textColor(context), // Динамічний колір тексту
+          ),
         ),
-        subtitle: Text('Exercises: ${exercises.length}'),
+        subtitle: Text(
+          'Exercises: ${exercises.length}',
+          style: TextStyle(color: AppColors.secondaryTextColor(context)),
+        ),
         children: exercises.isEmpty
-            ? [const ListTile(title: Text('No exercises available'))]
+            ? [
+          ListTile(
+            title: Text(
+              'No exercises available',
+              style: TextStyle(color: AppColors.textColor(context)),
+            ),
+          )
+        ]
             : exercises.asMap().entries.map((entry) {
           final index = entry.key;
           final exercise = entry.value;
@@ -52,14 +66,21 @@ class WorkoutCard extends StatelessWidget {
                 print('Checkbox changed for exercise $index to $value');
                 onToggleExerciseComplete(index);
               },
-              activeColor: accentColor,
+              activeColor: AppColors.accentColor(context), // Динамічний колір чекбокса
             ),
-            title: Text('${exercise['name']} (${exercise['category'] ?? 'Other'})'),
+            title: Text(
+              '${exercise['name']} (${exercise['category'] ?? 'Other'})',
+              style: TextStyle(color: AppColors.textColor(context)),
+            ),
             subtitle: Text(
               'Duration: ${exercise['duration']}s, Calories: ${exercise['caloriesPerMinute']}/min',
+              style: TextStyle(color: AppColors.secondaryTextColor(context)),
             ),
             trailing: IconButton(
-              icon: const Icon(Icons.timer),
+              icon: Icon(
+                Icons.timer,
+                color: AppColors.accentColor(context), // Динамічний колір іконки
+              ),
               onPressed: () => _startTimer(context, exercise['duration'] as int),
             ),
           );
@@ -68,11 +89,17 @@ class WorkoutCard extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           children: [
             IconButton(
-              icon: const Icon(Icons.edit, color: accentColor),
+              icon: Icon(
+                Icons.edit,
+                color: AppColors.accentColor(context), // Динамічний колір
+              ),
               onPressed: onEdit,
             ),
             IconButton(
-              icon: const Icon(Icons.delete, color: Colors.red),
+              icon: const Icon(
+                Icons.delete,
+                color: Colors.red, // Залишаємо червоний для видалення
+              ),
               onPressed: onDelete,
             ),
           ],
@@ -85,24 +112,40 @@ class WorkoutCard extends StatelessWidget {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Exercise Timer'),
+        backgroundColor: AppColors.cardColor(context), // Динамічний колір фону діалогу
+        title: Text(
+          'Exercise Timer',
+          style: TextStyle(color: AppColors.textColor(context)),
+        ),
         content: Countdown(
           seconds: duration,
           build: (context, time) => Text(
             'Time remaining: ${time.toInt()}s',
-            style: const TextStyle(fontSize: 24),
+            style: TextStyle(
+              fontSize: 24,
+              color: AppColors.textColor(context), // Динамічний колір тексту
+            ),
           ),
           onFinished: () {
             Navigator.pop(context);
             ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(content: Text('Exercise completed!')),
+              SnackBar(
+                content: Text(
+                  'Exercise completed!',
+                  style: TextStyle(color: AppColors.textColor(context)),
+                ),
+                backgroundColor: AppColors.cardColor(context),
+              ),
             );
           },
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('Cancel'),
+            child: Text(
+              'Cancel',
+              style: TextStyle(color: AppColors.accentColor(context)),
+            ),
           ),
         ],
       ),
